@@ -72,9 +72,10 @@ def funcallByTool(model,query,tools=toolsDefault):
 
     #result = llm_with_tools.invoke("你好")
     #print(result)
-    return llm_with_tools.invoke(query)
+    # return llm_with_tools.invoke(query)
+    return llm_with_tools.stream(query)
 
-def test():
+def test(query="你好"):
     from ..llm.onellm import model
     result=funcallByTool(model=model,query="你好")
     print(result)

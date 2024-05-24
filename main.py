@@ -10,9 +10,9 @@ from server.tools.rqgSearch import testRaq as testRaq1
 from server.tools.rag import testRAG as testRaq2
 
 import shutil
-# test1()
-# testRaq1()
-testRaq2("你是谁？",True)
+test1("你是谁？")
+# testRaq1("你是谁？")
+# testRaq2("你是谁？",True)
 
 # PORT=os.getenv("GRADIO_SERVER_PORT")
 
@@ -104,21 +104,27 @@ async def stream_echo(message, chat_histroy,userRag=False,file_obj=None):
         res=testRaq2(message,userRag,fileName)
     else:
         res=testRaq2(message,userRag)
+        
+        
     print(res)
     if isinstance(res,str):
         yield res
-    elif isinstance(res,object):
+    elif hasattr(res,"content"):
         print(res.content)
         yield res.content
     else:
         response = []
         for chunk in res:
             if chunk is not None:
-                response.append(chunk.content or "") 
+                if isinstance(chunk,str):
+                    response.append(chunk or "") 
+                else:
+                    response.append(chunk.content or "") 
                 yield "".join(response).strip()
             else:
                 break
             
+        print("".join(response).strip())
     # response = []
     # for chunk in client.stream(combined_messages):
     #     if chunk is not None:

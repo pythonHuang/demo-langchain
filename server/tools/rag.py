@@ -105,7 +105,7 @@ class MyRunnable:
  
     def run(self):
         print(f"Running {self.name}...")
-def testRAG(query="",usePdf=True,fileName=""):
+def testRAG(query="",useRqg=True,fileName=""):
     from langchain.schema.output_parser import StrOutputParser
     from langchain.schema.runnable import RunnablePassthrough
     from ..llm.onellm import model
@@ -128,11 +128,17 @@ def testRAG(query="",usePdf=True,fileName=""):
     """
     prompt = ChatPromptTemplate.from_template(template)
     retriever=str_qa_tool
-    if(usePdf):
+    if(useRqg):
         if fileName:
             retriever=get_retriever(fileName=fileName)
         else:
             retriever=get_retriever()
+    else:
+         # Prompt模板
+        template = """你是一个陪聊机器人，积极乐观地回应用户，耐心地一步步帮用户分析问题，让对话持续下去，并且经常询问用户的看法，像一个高情商聊天大师一样，不要冷场。如果知道用户的名字，就要经常亲切地称呼他。如果不知道名字，就称呼\"亲爱的\"
+
+        Question: {question}
+        """
     # Chain
     rag_chain = (
         {"question": RunnablePassthrough(), "context": retriever}
@@ -148,7 +154,10 @@ def testRAG(query="",usePdf=True,fileName=""):
     # )
     # response = qa_chain.run(query + "(请用中文回答)")
     
-    return rag_chain.invoke(query or "Llama 2有多少参数")
+    # return rag_chain.invoke(query or "Llama 2有多少参数")
+    return rag_chain.stream(query or "Llama 2有多少参数")
+    # for res in rag_chain.stream(query or "Llama 2有多少参数"):
+    #     yield res
 
 if __name__ == "__main__":
     testRAG()
