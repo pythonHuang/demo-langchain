@@ -1,6 +1,6 @@
 Answer the question based only on the following raqindexList:
-    {raqindexList}
+    {ragindexList}
 
     Question: {question}
 
-    find raq:{type}
+    find rag:{type}

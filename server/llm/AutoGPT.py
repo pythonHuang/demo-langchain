@@ -31,7 +31,7 @@ from pydantic import ValidationError
 
 from langchain.memory import ConversationTokenBufferMemory, VectorStoreRetrieverMemory
 
-def queryRqg(fileName: str, query:str) -> str:
+def queryRag(fileName: str, query:str) -> str:
     """向知识库提问"""
     fileName=f'./data/{fileName}'
     retriever=get_retriever(fileName=fileName)
@@ -47,22 +47,22 @@ def queryRqg(fileName: str, query:str) -> str:
     )
     return qa_chain.invoke(query)
 @tool
-def queryRqg_tool(fileName: str, query:str) -> str:
+def queryRag_tool(fileName: str, query:str) -> str:
     """向知识库提问"""
     
-    return queryRqg_tool(fileName,query)
+    return queryRag_tool(fileName,query)
 
 from langchain.tools import StructuredTool
 
-rqgIndexList=list_files_in_directory('./data/')
-print(rqgIndexList)
+ragIndexList=list_files_in_directory('./data/')
+print(ragIndexList)
 document_qa_tool = StructuredTool.from_function(
-    func=queryRqg,
+    func=queryRag,
     name="AskDocument",
     description="""根据一个Word或PDF文档的内容，回答一个问题。考虑上下文信息，确保问题对相关概念的定义表述完整。
     
     文件名列表： 
-    {0}""".format(rqgIndexList),
+    {0}""".format(ragIndexList),
 )
 
 class AutoGPT():
@@ -72,12 +72,12 @@ class AutoGPT():
     work_dir:str=""
     main_prompt_file:str=""
     ask_prompt_file:str=""
-    raq_prompt_file:str=""
+    rag_prompt_file:str=""
     funcall_prompt_file:str=""
     
     main_prompt:str=""
     funcall_prompt:str=""
-    raq_prompt:str=""
+    rag_prompt:str=""
     funcall_prompt:str=""
     @staticmethod
     def __chinese_friendly(string) -> str:
@@ -106,7 +106,7 @@ class AutoGPT():
                  tools=toolsDefault,
                  work_dir='./data/',
                  main_prompt_file='./prompts/main/main.txt',
-                 raq_prompt_file='./prompts/main/rqg.txt',
+                 rag_prompt_file='./prompts/main/rag.txt',
                  final_prompt_file='./prompts/main/final_step.txt',
                  funcall_prompt_file='./prompts/main/funcall.txt',
                  max_thought_steps: int= 4,
@@ -115,7 +115,7 @@ class AutoGPT():
         self.llm=llm
         self.tools=tools
         
-        self.tools.append(queryRqg)
+        self.tools.append(queryRag)
         
         self.work_dir=work_dir
         # OutputFixingParser： 如果输出格式不正确，尝试修复
@@ -123,7 +123,7 @@ class AutoGPT():
         self.robust_parser = OutputFixingParser.from_llm(parser=self.output_parser, llm=self.llm)
 
         self.main_prompt_file = main_prompt_file
-        self.raq_prompt_file = raq_prompt_file
+        self.rag_prompt_file = rag_prompt_file
         self.final_prompt_file = final_prompt_file
         self.funcall_prompt_file = funcall_prompt_file
         self.max_thought_steps=max_thought_steps
@@ -132,14 +132,14 @@ class AutoGPT():
         self.__init_chains(tools)
     
     def __init_prompt_templates(self):
-        rqgIndexList=self.__getRagIndex_prompt(self.work_dir)
+        ragIndexList=self.__getRagIndex_prompt(self.work_dir)
         
         
         self.final_prompt = PromptTemplate.from_file(
             self.final_prompt_file
         )
-        self.raq_prompt=PromptTemplate.from_file(
-            self.raq_prompt_file
+        self.rag_prompt=PromptTemplate.from_file(
+            self.rag_prompt_file
         )
         self.main_prompt = PromptTemplate.from_file(
             self.main_prompt_file
@@ -163,7 +163,7 @@ class AutoGPT():
         # 主流程的chain
         self.main_chain = (self.main_prompt | self.llm | StrOutputParser())
         # 提出问题的chain
-        self.raq_chain = (self.raq_prompt | self.llm | StrOutputParser())
+        self.rag_chain = (self.rag_prompt | self.llm | StrOutputParser())
         # 最终一步的chain
         self.final_chain = (self.final_prompt | self.llm | StrOutputParser())
         
@@ -184,7 +184,7 @@ class AutoGPT():
         return self.funcall_chain.stream(query)
         
     
-    def __askRAQTool(query:str,type:str):
+    def __askRAGTool(query:str,type:str):
         """向知识库提问
         """
         fileName=f'./data/{type}.pdf'
