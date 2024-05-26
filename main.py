@@ -1,3 +1,17 @@
+import sys
+import codecs
+sys.stdout=codecs.getwriter("utf-8")(sys.stdout.detach())
+# import sys
+# # reload(sys)
+# sys.setdefaultencoding('utf8')
+
+import os
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+os.environ['PYTHONUTF8'] = '1'
+os.environ['PYTHONUTF-8'] = '1'
+os.environ['PYTHONGBK'] = '0'
+
+
 from langchain.globals import set_debug
 # set_debug(True)
 import os
@@ -8,6 +22,9 @@ from server.llm.onellm import model
 from server.tools.funcall import test as test1
 from server.tools.rqgSearch import testRaq as testRaq1
 from server.tools.rag import testRAG as testRaq2
+from server.llm.AutoGPT import AutoGPT,test as test4
+
+test4()
 
 import shutil
 test1("你是谁？")
@@ -164,21 +181,21 @@ file=gr.components.File(label="上传文档")
 outputs=gr.components.File(label="下载文档")
 # 创建 Gradio 聊天界面
 demo = gr.ChatInterface(stream_echo,
-                        additional_inputs=[useRag ,file],
-                        additional_inputs_accordion_name="Additional Inputs",
-                        # outputs=outputs,
-                        title="陪聊机器人",
-                        description="你有什么想聊的事情吗？不妨先告诉我，你叫什么名字？",
-                        # examples=[["今天发工资了，真高兴！快叫我小财神",None],
-                        #           ["晋升答辩失败了，我有些难过",None],
-                        #           ["又和老婆吵架了，真不知道何时是个头",None],
-                        #           ["累死了！累死了！累死了！",None]],
-                        
-                        # examples=["今天发工资了，真高兴！快叫我小财神",
-                        #           "晋升答辩失败了，我有些难过",
-                        #           "又和老婆吵架了，真不知道何时是个头",
-                        #           "累死了！累死了！累死了！"],
-                        ).queue()
+        additional_inputs=[useRag ,file],
+        additional_inputs_accordion_name="Additional Inputs",
+        # outputs=outputs,
+        title="陪聊机器人",
+        description="你有什么想聊的事情吗？不妨先告诉我，你叫什么名字？",
+        # examples=[["今天发工资了，真高兴！快叫我小财神",None],
+        #           ["晋升答辩失败了，我有些难过",None],
+        #           ["又和老婆吵架了，真不知道何时是个头",None],
+        #           ["累死了！累死了！累死了！",None]],
+        
+        # examples=["今天发工资了，真高兴！快叫我小财神",
+        #           "晋升答辩失败了，我有些难过",
+        #           "又和老婆吵架了，真不知道何时是个头",
+        #           "累死了！累死了！累死了！"],
+    ).queue()
 
 if __name__ == "__main__":
     demo.launch(server_port=7801,inbrowser=True)

@@ -1,0 +1,6 @@
+Answer the question based only on the following raqindexList:
+    {raqindexList}
+
+    Question: {question}
+
+    find raq:{type}

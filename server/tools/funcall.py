@@ -12,7 +12,10 @@ from langchain_core.runnables import (
 )
 from langchain_core.tools import tool
 
-from .util import multiply, add, exponentiate
+from langchain.tools import StructuredTool
+
+from .util import multiply, add, exponentiate,list_files_in_directory
+
 
 # 名称到函数的映射
 toolsDefault = [multiply, add, exponentiate]
@@ -20,6 +23,13 @@ toolsDefault = [multiply, add, exponentiate]
 
 import json
 
+def  createTool(name:str="",action:any=None,description:str="")->StructuredTool:
+    tool = StructuredTool.from_function(
+        func=action,
+        name=name,
+        description=description,
+    )
+    return tool
 def route(response):
     if len(response["functions"]) > 0:
         return response["functions"]
@@ -52,7 +62,7 @@ def funcallGetResult(model,tools=toolsDefault):
     return llm_with_tools
 
 
-def funcallByTool(model,query,tools=toolsDefault):
+def funcallChain(model,tools=toolsDefault):
     call_tool_list=funcall_getTool(tools)
     # llm_with_tools = model.bind_tools(tools) | {
     #     "functions": JsonOutputToolsParser() | call_tool_list,
@@ -65,7 +75,10 @@ def funcallByTool(model,query,tools=toolsDefault):
         "text": StrOutputParser()
     } 
     llm_with_tools =llm_with_tools | RunnableLambda(route)
-     
+    return llm_with_tools
+
+def funcallByTool(model,query,tools=toolsDefault):
+    llm_with_tools =funcallChain(model,tools)
 
     #result = llm_with_tools.invoke("1024的平方是多少")
     #print(result)

@@ -36,3 +36,4 @@ class Config:
         self.RUN_SERVER_RELOAD = int(os.getenv('RUN_SERVER_RELOAD', '0')) == 1
 
 config = Config()
+# print("configflag")

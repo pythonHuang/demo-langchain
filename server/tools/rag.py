@@ -63,6 +63,8 @@ def load_docs(filename: str) -> List[Document]:
 
 def importDB(path="./data/LlamaIndex.pdf"):#医保SDK和上传下载调用示例.docx
     
+    if path.index("/")==-1:
+        path=f"./data/{path}"
     # 加载文档
     # loader = PyPDFLoader(path)
     # pages = loader.load_and_split()

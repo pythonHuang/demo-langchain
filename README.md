@@ -16,6 +16,10 @@
 
 ### 设置环境变量
 
+set PYTHONIOENCODING=utf-8
+
+set PYTHONIUTF8=1
+
 为了顺利运行此程序，您需要设置环境变量。请按照以下步骤操作：
 
 #### 第一步：创建环境变量文件
